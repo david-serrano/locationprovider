@@ -1,6 +1,8 @@
 # LocationProvider
 
-An implementation that returns a user location with the phones local data, no API's, no fuss.
+LocationProvider is a tiny library that abstracts away a lot of the pain of getting a users location from the phone (without having to call location APIs), provides a fully configurable standard Builder pattern and a set of callbacks.
+
+With the most basic usage, you give it a context and a callback and you're good to go!
 
 **DISCLAIMER: This library needs the COARSE and FINE permissions, but it assumes they have been given beforehand**
 
