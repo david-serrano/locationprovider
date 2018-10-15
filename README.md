@@ -18,6 +18,6 @@ An implementation that returns a user location with the phones local data, no AP
 2. add a dependency to your `app/build.gradle`: 
  ```
  dependencies {
-	        implementation 'com.github.david-serrano:locationprovider:-SNAPSHOT'
+	        implementation 'com.github.david-serrano:locationprovider:master-SNAPSHOT'
 	}
   ```
