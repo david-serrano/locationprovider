@@ -48,12 +48,12 @@ An implementation that returns a user location with the phones local data, no AP
         };
 	
 	//initialise an instance with the two required parameters
-        LocationProvider locationProvider = new LocationProvider.Builder()
+    LocationProvider locationProvider = new LocationProvider.Builder()
 	.setContext(this)
 	.setListener(callback)
 	.create();
 	//start getting location
-        locationProvider.requestLocation();
+    locationProvider.requestLocation();
 ```  
   # How it works:
  The library provides a standard Builder pattern with a few configurable options but uses default values if none are set.
@@ -64,3 +64,6 @@ An implementation that returns a user location with the phones local data, no AP
  3.1 If GPS initialised but taking too long, start a network listener after X (configurable) seconds.
  3.2 If only network initialised, some phones fail to update the listener but update the passive values correctly, so after Y (configurable) seconds, try the last known locations again.
  4. Return values for GPS/network when available and shut down self.
+ 
+ # License
+ [MIT License](./LICENSE)
