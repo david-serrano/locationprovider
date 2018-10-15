@@ -22,7 +22,7 @@ An implementation that returns a user location with the phones local data, no AP
 	}
   ```
   
-  #Example usage:
+  # Example usage:
   ```
   //create a callback
   LocationProvider.LocationCallback callback = new LocationProvider.LocationCallback() {
@@ -55,7 +55,7 @@ An implementation that returns a user location with the phones local data, no AP
 	//start getting location
         locationProvider.requestLocation();
 ```  
-  #How it works:
+  # How it works:
  The library provides a standard Builder pattern with a few configurable options but uses default values if none are set.
  In the most standard use case it will:
  1. Look for last known locations in order the following order `passive`, `gps`, `network`. If those return a value `onNewLocationAvailable` will be called.
