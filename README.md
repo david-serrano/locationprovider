@@ -18,7 +18,7 @@ An implementation that returns a user location with the phones local data, no AP
 2. add a dependency to your `app/build.gradle`: 
  ```
  dependencies {
-	        implementation 'com.github.david-serrano:locationprovider:master-SNAPSHOT'
+	        implementation 'com.github.david-serrano:locationprovider:v1'
 	}
   ```
   
@@ -52,6 +52,7 @@ An implementation that returns a user location with the phones local data, no AP
 	.setContext(this)
 	.setListener(callback)
 	.create();
+	
 	//start getting location
     locationProvider.requestLocation();
 ```  
@@ -60,9 +61,9 @@ An implementation that returns a user location with the phones local data, no AP
  In the most standard use case it will:
  1. Look for last known locations in order the following order `passive`, `gps`, `network`. If those return a value `onNewLocationAvailable` will be called.
  2. Initialise a GPS listener or network listener depending on availability of service (high accuracy vs battery saving for example)
- 3. 
- 3.1 If GPS initialised but taking too long, start a network listener after X (configurable) seconds.
- 3.2 If only network initialised, some phones fail to update the listener but update the passive values correctly, so after Y (configurable) seconds, try the last known locations again.
+ 3. Return location based on available providers:
+   - If GPS initialised but taking too long, start a network listener after X (configurable) seconds.
+   - If only network initialised, some phones fail to update the listener but update the passive values correctly, so after Y (configurable) seconds, try the last known locations again.
  4. Return values for GPS/network when available and shut down self.
  
  # License
