@@ -9,9 +9,6 @@ import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.util.Log;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 
 public class LocationProvider {
 
@@ -23,6 +20,8 @@ public class LocationProvider {
         void updateLocationInBackground(float latitude, float longitude);
 
         void networkListenerInitialised();
+
+        void locationRequestStopped();
     }
 
     private static LocationManager locationManager;
@@ -58,45 +57,40 @@ public class LocationProvider {
 
     @SuppressLint("MissingPermission")
     public void requestLocation() {
-        if(getIsRequestingLocation()) {
+        if (getIsRequestingLocation()) {
             removeUpdates();
-        }
-
-        if(!loggingEnabled) {
-            Logger logger = Logger.getLogger(LocationProvider.class.getName());
-            logger.setLevel(Level.OFF);
         }
 
         isFirstToReturn = true;
         isRequestingLocationActive = true;
 
-        Log.d("LocationProvider", "starting location service");
+        outputLog("starting location service");
 
         locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
         locationCallback = callback;
 
         Location lastKnownPassiveLocation = getLastKnownLocation(context, LocationManager.PASSIVE_PROVIDER);
         if (lastKnownPassiveLocation != null) {
-            Log.d("LocationProvider", "valid passive provider - callback");
+            outputLog("valid passive provider - callback");
 
             updateLocation((float) lastKnownPassiveLocation.getLatitude(), (float) lastKnownPassiveLocation.getLongitude());
         } else {
-            Log.d("LocationProvider", "invalid passive provider");
+            outputLog("invalid passive provider");
 
             Location lastKnownGPS = getLastKnownLocation(context, LocationManager.GPS_PROVIDER);
             if (lastKnownGPS != null) {
-                Log.d("LocationProvider", "invalid passive but valid gps - callback");
+                outputLog("invalid passive but valid gps - callback");
 
                 updateLocation((float) lastKnownGPS.getLatitude(), (float) lastKnownGPS.getLongitude());
             } else {
-                Log.d("LocationProvider", "invalid gps provider");
+                outputLog("invalid gps provider");
 
                 Location lastKnownNetwork = getLastKnownLocation(context, LocationManager.NETWORK_PROVIDER);
                 if (lastKnownNetwork != null) {
-                    Log.d("LocationProvider", "invalid passive and gps but valid network - callback");
+                    outputLog("invalid passive and gps but valid network - callback");
                     updateLocation((float) lastKnownNetwork.getLatitude(), (float) lastKnownNetwork.getLongitude());
                 } else {
-                    Log.d("LocationProvider", "invalid network provider");
+                    outputLog("invalid network provider");
                 }
             }
         }
@@ -107,14 +101,15 @@ public class LocationProvider {
         if (isGPSEnabled) {
             gpsTimer = new CountDownTimer(gpsTimeoutMillis, gpsTimeoutMillis) {
                 @Override
-                public void onTick(long millisUntilFinished) { }
+                public void onTick(long millisUntilFinished) {
+                }
 
                 @Override
                 public void onFinish() {
                     networkUpdatesListener = new LocationListener() {
                         @Override
                         public void onLocationChanged(Location location) {
-                            Log.d("LocationProvider", "network returned");
+                            outputLog("network returned");
                             updateLocation((float) location.getLatitude(), (float) location.getLongitude());
                             removeUpdates();
                         }
@@ -131,8 +126,8 @@ public class LocationProvider {
                         public void onProviderDisabled(String provider) {
                         }
                     };
-                    if(isNetworkEnabled) {
-                        Log.d("LocationProvider", "GPS timer finished - Network enabled, listening for updates");
+                    if (isNetworkEnabled) {
+                        outputLog("GPS timer finished - Network enabled, listening for updates");
                         startUpdates(context, LocationManager.NETWORK_PROVIDER, minimumNetworkUpdateDistance, minimumNetworkUpdateTime, networkUpdatesListener);
                     }
                 }
@@ -140,9 +135,9 @@ public class LocationProvider {
             gpsUpdatesListener = new LocationListener() {
                 @Override
                 public void onLocationChanged(Location location) {
-                    Log.d("LocationProvider", "GPS returned");
+                    outputLog("GPS returned");
                     updateLocation((float) location.getLatitude(), (float) location.getLongitude());
-                    if(gpsTimer != null) {
+                    if (gpsTimer != null) {
                         gpsTimer.cancel();
                     }
                     removeUpdates();
@@ -161,7 +156,7 @@ public class LocationProvider {
                 }
             };
 
-            Log.d("LocationProvider", "GPS enabled, listening for updates");
+            outputLog("GPS enabled, listening for updates");
             gpsTimer.start();
             startUpdates(context, LocationManager.GPS_PROVIDER, minimumGpsUpdateTime, minimumGpsUpdateDistance, gpsUpdatesListener);
         } else if (isNetworkEnabled) {
@@ -169,9 +164,9 @@ public class LocationProvider {
             networkUpdatesListener = new LocationListener() {
                 @Override
                 public void onLocationChanged(Location location) {
-                    Log.d("LocationProvider", "network returned");
+                    outputLog("network returned");
                     updateLocation((float) location.getLatitude(), (float) location.getLongitude());
-                    if(networkTimer != null) {
+                    if (networkTimer != null) {
                         networkTimer.cancel();
                     }
                     removeUpdates();
@@ -189,24 +184,25 @@ public class LocationProvider {
                 public void onProviderDisabled(String provider) {
                 }
             };
-            Log.d("LocationProvider", "Network enabled, listening for updates");
+            outputLog("Network enabled, listening for updates");
             startUpdates(context, LocationManager.NETWORK_PROVIDER, minimumNetworkUpdateTime, minimumNetworkUpdateDistance, networkUpdatesListener);
 
             networkTimer = new CountDownTimer(networkTimeoutMillis, networkTimeoutMillis) {
                 @Override
-                public void onTick(long millisUntilFinished) {}
+                public void onTick(long millisUntilFinished) {
+                }
 
                 @Override
                 public void onFinish() {
-                    Log.d("LocationProvider", "timer finished");
+                    outputLog("timer finished");
                     Location lastKnownPassiveLocation = getLastKnownLocation(context, LocationManager.PASSIVE_PROVIDER);
                     removeUpdates();
                     if (lastKnownPassiveLocation != null) {
-                        Log.d("LocationProvider", "valid passive provider - callback");
+                        outputLog("valid passive provider - callback");
 
                         updateLocation((float) lastKnownPassiveLocation.getLatitude(), (float) lastKnownPassiveLocation.getLongitude());
                     } else {
-                        Log.d("LocationProvider", "timer finished, invalid passive, clearing & restarting");
+                        outputLog("timer finished, invalid passive, clearing & restarting");
 
                         requestLocation();
                     }
@@ -214,14 +210,14 @@ public class LocationProvider {
             };
             networkTimer.start();
         } else {
-            Log.d("LocationProvider", "everything failed");
+            outputLog("No providers are available");
             callback.locationServicesNotEnabled();
         }
     }
 
     @SuppressLint("MissingPermission")
     private Location getLastKnownLocation(Context context, String provider) {
-        if(locationManager == null) {
+        if (locationManager == null) {
             locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
         }
         return locationManager.getLastKnownLocation(provider);
@@ -229,11 +225,11 @@ public class LocationProvider {
 
     @SuppressLint("MissingPermission")
     private void startUpdates(Context context, String provider, int time, int distance, LocationListener listener) {
-        if(locationManager == null) {
+        if (locationManager == null) {
             locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
         }
 
-        if(provider.equals( LocationManager.NETWORK_PROVIDER)) {
+        if (provider.equals(LocationManager.NETWORK_PROVIDER)) {
             locationCallback.networkListenerInitialised();
         }
 
@@ -241,13 +237,19 @@ public class LocationProvider {
     }
 
     private void updateLocation(float lat, float lon) {
-        if(isFirstToReturn) {
-            Log.d("LocationProvider", "first callback");
+        if (isFirstToReturn) {
+            outputLog("first callback");
             locationCallback.onNewLocationAvailable(lat, lon);
             isFirstToReturn = false;
         } else {
-            Log.d("LocationProvider", "background update");
+            outputLog("background update");
             locationCallback.updateLocationInBackground(lat, lon);
+        }
+    }
+
+    private void outputLog(String log) {
+        if (loggingEnabled) {
+            Log.d("LocationProvider", log);
         }
     }
 
@@ -257,34 +259,35 @@ public class LocationProvider {
 
     @SuppressLint("MissingPermission")
     private void removeUpdates() {
-        Log.d("LocationProvider", "attempting to remove listeners");
+        outputLog("attempting to remove listeners");
 
-        if(gpsUpdatesListener != null && locationManager != null) {
-            Log.d("LocationProvider", "removed gps listener");
+        if (gpsUpdatesListener != null && locationManager != null) {
+            outputLog("removed gps listener");
             locationManager.removeUpdates(gpsUpdatesListener);
             gpsUpdatesListener = null;
         }
-        if(networkUpdatesListener != null && locationManager != null) {
-            Log.d("LocationProvider", "removed network listener");
+        if (networkUpdatesListener != null && locationManager != null) {
+            outputLog("removed network listener");
             locationManager.removeUpdates(networkUpdatesListener);
             networkUpdatesListener = null;
         }
-        if(networkTimer != null) {
-            Log.d("LocationProvider", "removed network timer");
+        if (networkTimer != null) {
+            outputLog("removed network timer");
             networkTimer.cancel();
             networkTimer = null;
         }
-        if(gpsTimer != null) {
-            Log.d("LocationProvider", "removed GPS timer");
+        if (gpsTimer != null) {
+            outputLog("removed GPS timer");
             gpsTimer.cancel();
             gpsTimer = null;
         }
-        if(locationManager != null) {
-            Log.d("LocationProvider", "removed location manager");
+        if (locationManager != null) {
+            outputLog("removed location manager");
             locationManager = null;
         }
 
         isRequestingLocationActive = false;
+        callback.locationRequestStopped();
     }
 
     public static class Builder {
@@ -344,7 +347,7 @@ public class LocationProvider {
         }
 
         public LocationProvider create() {
-            if(this.context == null) {
+            if (this.context == null) {
                 try {
                     throw new Exception("Context needs to be passed in");
                 } catch (Exception e) {
@@ -352,7 +355,7 @@ public class LocationProvider {
                 }
             }
 
-            if(this.callback == null) {
+            if (this.callback == null) {
                 try {
                     throw new Exception("No callback provided, do you expect updates?");
                 } catch (Exception e) {

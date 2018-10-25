@@ -1,3 +1,10 @@
 <resources>
     <string name="app_name">LocationProvider</string>
+    <string name="start_updates">Start updates</string>
+    <string name="main_requesting_location">Requesting location...</string>
+    <string name="main_output">Output:</string>
+    <string name="alert_title">Location required</string>
+    <string name="alert_message">This app needs location permission to work, please enable them in settings</string>
+    <string name="alert_positive_action">To settings</string>
+    <string name="alert_negative_action">Cancel</string>
 </resources>
