@@ -4,7 +4,7 @@ LocationProvider is a tiny library that abstracts away a lot of the pain of gett
 
 With the most basic usage, you give it a context and a callback and you're good to go!
 
-**DISCLAIMER: This library needs the COARSE and FINE permissions, but it assumes they have been given beforehand**
+**DISCLAIMER: This library needs the ACCESS_FINE_LOCATION permission, but it assumes they have been given beforehand**
 
 # Install instructions
 1. add the jitpack dependency: 
@@ -20,7 +20,7 @@ With the most basic usage, you give it a context and a callback and you're good 
 2. add a dependency to your `app/build.gradle`: 
  ```
  dependencies {
-	        implementation 'com.github.david-serrano:locationprovider:v1'
+	        implementation 'com.github.david-serrano:locationprovider:1.1'
 	}
   ```
   
@@ -28,6 +28,11 @@ With the most basic usage, you give it a context and a callback and you're good 
   ```
   //create a callback
   LocationProvider.LocationCallback callback = new LocationProvider.LocationCallback() {
+	    @Override
+            public void locationRequestStopped(float lat, float lon) {
+                //location updates stopped
+            }
+
             @Override
             public void onNewLocationAvailable(float lat, float lon) {
                 //location update
@@ -66,7 +71,7 @@ With the most basic usage, you give it a context and a callback and you're good 
  3. Return location based on available providers:
    - If GPS initialised but taking too long, start a network listener after X (configurable) seconds.
    - If only network initialised, some phones fail to update the listener but update the passive values correctly, so after Y (configurable) seconds, try the last known locations again.
- 4. Return values for GPS/network when available and shut down self.
+ 4. Return values for GPS/network when available and shut down self, call back to listener.
  
  # License
  [MIT License](./LICENSE)
