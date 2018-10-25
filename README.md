@@ -4,7 +4,9 @@ LocationProvider is a tiny library that abstracts away a lot of the pain of gett
 
 With the most basic usage, you give it a context and a callback and you're good to go!
 
-**DISCLAIMER: This library needs the ACCESS_FINE_LOCATION permission, but it assumes they have been given beforehand**
+**DISCLAIMER: This library needs the ACCESS_FINE_LOCATION permission, but it assumes it has been given beforehand, see sample app for more details**
+
+[![](https://jitpack.io/v/david-serrano/locationprovider.svg)](https://jitpack.io/#david-serrano/locationprovider)
 
 # Install instructions
 1. add the jitpack dependency: 
