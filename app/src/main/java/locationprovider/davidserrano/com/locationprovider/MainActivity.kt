@@ -20,6 +20,7 @@ class MainActivity : AppCompatActivity() {
 
     private val bothLocationsRequestCode = 1
     private val SETTINGS_ACTION = 123
+    private lateinit var lProvider: LocationProvider
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -35,6 +36,11 @@ class MainActivity : AppCompatActivity() {
                 startLocationUpdates()
             }
         }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        lifecycle.removeObserver(lProvider)
     }
 
     private fun startLocationUpdates() {
@@ -62,10 +68,13 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        val lProvider: LocationProvider = LocationProvider.Builder()
+        lProvider = LocationProvider.Builder()
                 .setContext(this)
                 .setListener(callback)
                 .create()
+
+        lifecycle.addObserver(lProvider)
+
         disableLocationButton()
 
         printOutput("\nStarting location updates...")

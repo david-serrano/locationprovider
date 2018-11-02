@@ -1,6 +1,9 @@
 package locationprovider.davidserrano.com;
 
 import android.annotation.SuppressLint;
+import android.arch.lifecycle.Lifecycle;
+import android.arch.lifecycle.LifecycleObserver;
+import android.arch.lifecycle.OnLifecycleEvent;
 import android.content.Context;
 import android.location.Location;
 import android.location.LocationListener;
@@ -10,7 +13,7 @@ import android.os.CountDownTimer;
 import android.util.Log;
 
 
-public class LocationProvider {
+public class LocationProvider implements LifecycleObserver {
 
     public interface LocationCallback {
         void onNewLocationAvailable(float latitude, float longitude);
@@ -53,6 +56,16 @@ public class LocationProvider {
         minimumNetworkUpdateDistance = builder.minimumNetworkUpdateDistance;
         minimumNetworkUpdateTime = builder.minimumNetworkUpdateTime;
         loggingEnabled = builder.loggingEnabled;
+    }
+
+    @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
+    public void onLocationResume() {
+        requestLocation();
+    }
+
+    @OnLifecycleEvent(Lifecycle.Event.ON_PAUSE)
+    public void onLocationPause() {
+        removeUpdates();
     }
 
     @SuppressLint("MissingPermission")
