@@ -22,7 +22,7 @@ With the most basic usage, you give it a context and a callback and you're good 
 2. add a dependency to your `app/build.gradle`: 
  ```
  dependencies {
-	        implementation 'com.github.david-serrano:locationprovider:1.1'
+	        implementation 'com.github.david-serrano:locationprovider:1.2'
 	}
   ```
   
