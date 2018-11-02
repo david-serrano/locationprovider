@@ -1,10 +1,12 @@
 # LocationProvider
 
-LocationProvider is a tiny library that abstracts away a lot of the pain of getting a users location from the phone (without having to call location APIs), provides a fully configurable standard Builder pattern and a set of callbacks.
+LocationProvider is a tiny, lifecycle aware library that abstracts away a lot of the pain of getting a users location from the phone (without having to call location APIs), provides a fully configurable standard Builder pattern and a set of callbacks.
 
 With the most basic usage, you give it a context and a callback and you're good to go!
 
 **DISCLAIMER: This library needs the ACCESS_FINE_LOCATION permission, but it assumes it has been given beforehand, see sample app for more details**
+
+For details on how to hook into an activity lifecycle, see the sample app. The library hooks on to onResume and onPause to start and stop the location requests. If you need further hooks, please open up an issue :)
 
 [![](https://jitpack.io/v/david-serrano/locationprovider.svg)](https://jitpack.io/#david-serrano/locationprovider)
 
